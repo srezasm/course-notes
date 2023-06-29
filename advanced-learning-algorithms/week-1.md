@@ -39,6 +39,47 @@ a2 = layer2(a1)
 np_arr = a2.numpy() # returns the numpy array
 ```
 
-## Building a neural network
+## Forward propagation
 
+_tip)_ We name matrix variables like `W` Uppercase and array variables like `b` lowercase.
 
+Simplified implementation of dense layer:
+
+```python
+def dense(a_in, W, b):
+    units = a_in.shape[1]
+    a_out = np.zeros(units)
+    for j in range(units):
+        w = W[:, j]
+        z = np.dot(w, a_in) + b[j]
+        a_out[j] = g(z) # g() is defined outside of dense()
+    return a_out
+
+x = np.array([200, 17])
+W = np.array([[1, -3, 5]
+              [-2, 4, -6]])
+b = np.array([-1, 1, 2])
+
+dense(x, W, b)
+```
+
+## How neural networks are implemented efficiently
+
+Vectorized version of above implementation:
+
+```python
+def dense(A_in, W, B):
+    Z = np.matmul(A_in, W) # multiply A_in and W
+    Z = Z + B
+    A_out = g(Z)
+    return A_out
+
+X = np.array([[200, 17]])
+W = np.array([[1, -3, 5]
+              [-2, 4, -6]])
+B = np.array([[-1, 1, 2]])
+```
+
+_tip)_ `T` property of a numpy 2D array is its transposed version. We name a transposed matrix with a `T` at the end e.g. `AT = A.T`
+
+_tip)_ `@` will do the `np.matmul()` job e.g. `Z = AT @ W`
