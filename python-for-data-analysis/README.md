@@ -1,6 +1,5 @@
 # Python for Data Analysis
 
-<div style="position: absolute; top: 0; right: 0;">
-    <img src="./assets/header.jpg" alt="Header" width="200px">
-</div>
+<img align="right" src="./assets/header.jpg" alt="Header" width="200px">
 
+[C4. NumPy Basics: Arrays and Vectorized Computation](./4-numpy-basics.md)
