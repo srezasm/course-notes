@@ -156,3 +156,56 @@ Final notes:
 
 - It almost always never hurts to have a larger neural network as long as you can effort the computational power
 - As long as your training set isn't too large; the neural network(specially large neural network) is often a low bias machine and just fits complicated functions very well.
+
+## Iterative loop of ML development
+
+In the process of building a machine learning model, you may do the following iterative steps:
+
+1. Choose architecture(model, data, etc.) [go to 2]
+2. Train the model [go to 3]
+3. Diagnostics(bias, variance, and error analysis) [go to 1]
+
+## Error analysis
+
+Error analysis consists of manually checking the misclassified examples from the CV set.
+
+We can collect the misclassified examples and group them into common themes and properties.
+
+If the misclassified examples are too many, we can randomly select around 100 of them.
+
+After this process, we will get insights about what to do next, e.g. you might decide to collect more data that has the most repeated property, or increase the weight of that property.
+
+## Adding data
+
+It's always tempting to collect more data, but the process of collecting more data can be highly expensive; so instead we can collect a fewer data of just the type that _error analysis_ proved would be more helpful.
+
+### Data augmentation
+
+Instead of collecting, we can generate new data from those we already have; e.g. in an image dataset for detecting handwritten letters, we can:
+
+- Rotate
+- Enlarge
+- Shrink
+- Change contrast
+- Mirror some of letters like A, O, W
+
+<img src="./assets/img-7.jpg" height="250px">
+
+Or in a more advanced way, place a grid on top of the image and create random warpings.
+
+And in a speech recognition model, we can:
+
+- Add different background noises to of the audio
+- Convert the audio to a bad cellphone connection mode
+
+But keep in mind that just adding random noises to image or audio will not help.
+
+### Data synthesis
+
+Synthesis: using artificial data inputs to create a new training example.
+
+For example for a text recognition system, we can write different letters with different fonts and take screenshots with different backgrounds.
+
+_tip)_ Synthetic data generation has been used mostly for computer vision
+
+For many decades the focus has been on improving the model in order to improve the performance of the application, and this resulted in existing of many good algorithms today. Therefore sometimes it might be more fruitful to taking a _data centric approach_ in which we focus on engineering the data used by algorithms.
