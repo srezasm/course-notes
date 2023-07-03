@@ -89,3 +89,93 @@ obj4.index.name = 'state'
 # Texas         71000.0
 # Name: population, dtype: float64
 ```
+
+## DataFrame
+
+A DataFrame represents a rectangular table of data and contains an ordered collection of columns, each of which can be a different value type.
+
+One of the most common ways to initialize a DataFrame is from a dict of equal-length lists or NumPy arrays:
+
+```python
+data = {
+    'state': ['Ohio', 'Ohio', 'Ohio', 'Nevada', 'Nevada', 'Nevada'],
+    'year': [2000, 2001, 2002, 2001, 2002, 2003],
+    'pop': [1.5, 1.7, 3.6, 2.4, 2.9, 3.2]
+}
+
+frame = pd.DataFrame(data)
+```
+
+In Jupyter notebook the DataFrame will be shown as a markdown table.
+
+Rearranging the columns:
+
+```python
+pd.DataFrame(data, columns=['year', 'state', 'pop'])
+```
+
+A column in a DataFrame can be retrieved as a Series either by dict-like notation or by attribute:
+
+```python
+frame['state']
+frame.state
+```
+
+_note)_ `frame[column]` works for any column name, but `frame.column` only works when the column name is a valid Python variable name.
+
+Rows can also be retrieved by position or name with the special loc attribute:
+
+```python
+frame.loc['three']
+```
+
+Columns can be modified by assignment of an array or scalar value:
+
+```python
+frame['debt'] = 16.5
+frame['debt'] = np.arange(6.)
+```
+
+When you are assigning lists or arrays to a column, the value’s length must match the length of the DataFrame. If you assign a Series, its labels will be realigned exactly to the DataFrame’s index, inserting missing values in any holes.
+
+```python
+val = pd.Series([-1.2, -1.5, -1.7], index=['two', 'four', 'five'])
+frame['debt'] = val
+```
+
+Assigning a column that doesn’t exist will create a new column.  
+The `del` keyword will delete columns as with a dict.
+
+_note)_ New columns cannot be created with the `frame.eastern` syntax.
+
+```python
+frame['eastern'] = frame.state == 'Ohio' # create a boolean column
+del frame['eastern']
+```
+
+_note)_ The column returned from indexing a DataFrame is a view on the underlying data, not a copy. Thus, any in-place modifications to the Series will be reflected in the DataFrame. The column can be explicitly copied with the Series’s copy method.
+
+Another common form of data is a nested dict of dicts. pandas will interpret the outer dict keys
+as the columns and the inner keys as the row indices:
+
+```python
+pop = {'Nevada': {2001: 2.4, 2002: 2.9},
+       'Ohio': {2000: 1.5, 2001: 1.7, 2002: 3.6}}
+frame3 = pd.DataFrame(pop)
+```
+
+You can transpose the DataFrame (swap rows and columns) with similar syntax to a NumPy array:
+
+```python
+frame3.T
+```
+
+The values attribute returns the data contained in the DataFrame as a two-dimensional ndarray:
+
+```python
+frame3.values
+# output:
+# array([[ nan, 1.5],
+#        [ 2.4, 1.7],
+#        [ 2.9, 3.6]])
+```
