@@ -53,9 +53,9 @@ Looking at the _bias_ and _variance_ of a model gives a really good insight of h
 Bias = _Training error_ $\longrightarrow$ underfitting  
 Variance = Difference between _training_ and _testing_ error $\longrightarrow$ overfitting
 
-![image1](assets/img-1.jpg)
+![image1](assets/img-01.jpg)
 
-<img src="./assets/img-2.png" align="right" height="250px">
+<img src="./assets/img-02.jpg" align="right" height="250px">
 
 High bias:  
 $J_{train}$ is high  
@@ -80,7 +80,7 @@ And by choosing a small $\lambda$, the effect of normalization will be minimized
 
 To choose the best $\lambda$ we can train different models with different $\lambda$s on the _training set_ and select the best model based on _CV loss_ of each model.
 
-![image1](assets/img-3.jpg)
+![image1](assets/img-03.jpg)
 
 ## Estimating a baseline level of performance
 
@@ -96,17 +96,17 @@ If the difference between the _training error_ and _CV error_ is high, it means 
 
 ## Learning curves
 
-<image src="./assets/img-4.png" height="200px">
+<image src="./assets/img-04.jpg" height="200px">
 
 As the of _training set size_ grows, the _training error_ and _CV error_ converge and get lower.
 
 _CV error_ will typically be higher than _training error_.
 
-<img src="./assets/img-5.png" height="200px">
+<img src="./assets/img-05.jpg" height="200px">
 
 However if the model has a _high bias_ and underfits, throwing more data at it will not make it more accurate. The _CV_ and _training_ errors flatten and continue for infinity.
 
-<img src="./assets/img-6.png" height="200px">
+<img src="./assets/img-06.jpg" height="200px">
 
 In the case of _high variance_, at the beginning, the _training error_ and _CV error_ get close to the _baseline accuracy level_ and the _training error_ might even converge with the _base level_ but _CV error_ is so high.
 
@@ -189,7 +189,7 @@ Instead of collecting, we can generate new data from those we already have; e.g.
 - Change contrast
 - Mirror some of letters like A, O, W
 
-<img src="./assets/img-7.jpg" height="250px">
+<img src="./assets/img-07.jpg" height="250px">
 
 Or in a more advanced way, place a grid on top of the image and create random warpings.
 
@@ -266,7 +266,7 @@ In an application that should predict if a patient has a rare disease, 99% accur
 
 ### Precision/recall metrics
 
-<img src="./assets/img-8.jpg" height="300px">
+<img src="./assets/img-08.jpg" height="300px">
 
 This metric is calculated with a $2 \times 2$ matrix _for binary classification_ applications, where the top 0 and 1 represent the actual value, and the side 0 and 1 represent the predicted value, and in each cell we have the number of corresponding items.
 
@@ -295,7 +295,7 @@ But if the disease is fatal and its treatment is expensive, we might want to onl
 
 In this case, we will get a _higher precision_ and _lower recall_, as the predicted positives will be more accurate but instead we'll miss some actually positive ones.
 
-<img src="./assets/img-9.jpg" height="300px">
+<img src="./assets/img-09.jpg" height="300px">
 
 In another case, if the disease is easily treatable but would get worse if not, we may want to lower the threshold:
 
