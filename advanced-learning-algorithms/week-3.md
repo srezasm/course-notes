@@ -209,3 +209,113 @@ For example for a text recognition system, we can write different letters with d
 _tip)_ Synthetic data generation has been used mostly for computer vision
 
 For many decades the focus has been on improving the model in order to improve the performance of the application, and this resulted in existing of many good algorithms today. Therefore sometimes it might be more fruitful to taking a _data centric approach_ in which we focus on engineering the data used by algorithms.
+
+## Transfer learning: using data from a different task
+
+Assume we want to create an application to classify the handwritten numbers, but we don't have enough data to train the model.  
+We can instead of training a new model from base, use a pretrained model on a large dataset of a million images and a thousand classes that has a lot of parameters already and fine-tune it for your specific application.
+
+To do this, we copy the model that already has $(W^{[1]}, b^{[1]}), \dots, (W^{[N]}, b^{[N]})$ parameters and change the output layer from 1000 units to only 10 units and change its parameters to fit our application.
+
+we need to run an optimization algorithm, such as _Gradient decent_ or _Adam_, using the parameter values initialized from the previous layers.
+
+There are two options to train the networks parameters:
+
+1. Only train the _output layers_ parameters, $W^{[N]}, b^{[N]}$, by running an optimization algorithm, such as _Gradient decent_ or _Adam_, using the parameter values initialized from the previous layers.
+2. Train _all the parameters_, $(W^{[1]}, b^{[1]}), \dots, (W^{[N]}, b^{[N]})$, and the hidden layers parameters will be initialized by the values you had trained on top.
+
+Option 1 is better for a really small training examples, and option 2 might be better for a larger training set.
+
+The idea behind transfer learning is that, by training a model on a large dataset, it hopefully has learned a lot of parameters for the earlier layers, then by transferring these parameters to a new neural network, it would start off with the parameters in a much better place.
+
+The process of training a rather large model on a large dataset is called _Supervised pretraining_, and the second step is called _Fine tuning_.
+
+**Why does it even work**?  
+In each layer, the model learns about some features of the image, like Edges, Corners, Curves/Basic shapes, and etc. So just by changing the output layer, it would use those learned features to detect the final result that we want.
+
+_tip)_ We should use the same input type as the original input type of pretrained model.
+
+1. Download neural network pretrained on a large dataset with same input type as your application.
+2. Further train(fine tune) the network on your own data
+
+## Full cycle of a machine learning project
+
+1. Scope project: Define project
+2. Collect data: Define and collect data
+3. Train model: Training, error analysis & [iterative improvement](#iterative-loop-of-ml-development)
+4. Deploy in production: Deploy, monitor and maintain system
+
+Deployment is to take the model and serve it in an _inference server_
+
+## Fairness, bias and ethics
+
+The model, based on the feed data, might output offensive results, e.g. a hiring tool that discriminated against women, biased bank loan approvals, toxic effect of reinforcing stereotypes.
+
+ML model can be used to advantage in adverse use cases, e.g. making deepfake of people without their consent, generating fake content, spreading toxic speech, using ML for committing fraud.
+
+### Guidelines
+
+- Get a diverse team to brainstorm things that might go wrong, with emphasis on possible harm to vulnerable groups.
+- Carry out literature search on standards/guidelines for your industry.
+- Audit systems against possible harm prior to development.
+- Develope mitigation plan(if applicable), and after deployment, monitor for possible harm.
+
+## Error metrics for skewed datasets
+
+In an application that should predict if a patient has a rare disease, 99% accuracy would not be impressive, i.e. if only 0.05% of the cases have that disease, only printing 0 would give us 99.5% accuracy!
+
+### Precision/recall metrics
+
+<img src="./assets/img-8.jpg" height="300px">
+
+This metric is calculated with a $2 \times 2$ matrix _for binary classification_ applications, where the top 0 and 1 represent the actual value, and the side 0 and 1 represent the predicted value, and in each cell we have the number of corresponding items.
+
+- True positive: actually _positive_ and predicted _positive_
+- False negative: actually _positive_ and predicted _negative_
+- True negative: actually _negative_ and predicted _negative_
+- False positive: actually _negative_ and predicted _positive_
+
+Precision is the fraction of true positive results among all the positive predictions made by the model. In other words, it measures _how accurate the model is when it predicts a positive outcome_.
+
+Recall, on the other hand, is the fraction of true positive results among all the actual positive cases in the data. In other words, it measures _how well the model identifies positive cases_.
+
+The closer the both precision and recall to 1, the better.
+
+## Trading off precision and recall
+
+Normally the threshold for binary classification is as follows:
+
+- Predict 1 if $f_{\vec{w}, b}(\vec{x}) \geq 0.5$
+- Predict 0 if $f_{\vec{w}, b}(\vec{x}) < 0.5$
+
+But if the disease is fatal and its treatment is expensive, we might want to only classify the patient as sick, only if we're very confident:
+
+- Predict 1 if $f_{\vec{w}, b}(\vec{x}) \geq 0.7$
+- Predict 0 if $f_{\vec{w}, b}(\vec{x}) < 0.7$
+
+In this case, we will get a _higher precision_ and _lower recall_, as the predicted positives will be more accurate but instead we'll miss some actually positive ones.
+
+<img src="./assets/img-9.jpg" height="300px">
+
+In another case, if the disease is easily treatable but would get worse if not, we may want to lower the threshold:
+
+- Predict 1 if $f_{\vec{w}, b}(\vec{x}) \geq 0.3$
+- Predict 0 if $f_{\vec{w}, b}(\vec{x}) < 0.3$
+
+But in this case we'll get _lower precision_ and _higher recall_, because we'll guess more of the actual sick ones, but the chance of predicting a sick one healthy would also increase.
+
+### $F_1\ \text{score}$
+
+F1 score is a way to combine both precision and recall into a single score, so we can go with those values that result into the highest F1 score.
+
+One way to combine precision and recall is to take the average, but it wont work well because a very high value would make up for a very low value. But $F_1\ \text{score}$ fixes this problem by putting emphasis on the lower value.
+
+$$F_1\ \text{score} = \dfrac{1}{\dfrac{1}{2}(\dfrac{1}{P} + \dfrac{1}{R})} = 2\dfrac{PR}{P+R}$$
+
+_tip)_ $\frac{PR}{P+R}$ is called _Harmonic mean_ in math, and is a way to take average by emphasizing on smaller values more.
+
+| $\ddots$    | P    | R   | Avg   | $F_1\ \text{score}$ |
+|-------------|------|-----|-------|---------------------|
+| Algorithm 1 | 0.5  | 0.4 | 0.45  | 0.444               |
+| Algorithm 2 | 0.7  | 0.1 | 0.4   | 0.175               |
+| Algorithm 3 | 0.02 | 1.0 | 0.501 | 0.039               |
