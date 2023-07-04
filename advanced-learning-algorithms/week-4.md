@@ -168,3 +168,62 @@ Now by this change, we have the _random forest_ algorithm.
         </la>
     </details>
 </details>
+
+## XGBoost
+
+The most popular decision tree algorithm is XGBoost.
+
+The idea of boosting comes from in each iteration, increasing the probability of choosing the mispredicted classes which changes the algorithm into:
+
+For $b = 1$ to $B$:
+
+- Use sampling with replacement to create a new training set of size $m$. But instead of picking from all examples with equal (1/m) probability, make it more likely to pick misclassified examples from previously trained trees.
+- Train a decision tree on the new dataset.
+
+### XGBoost (EXtreme Gradient Boosting)
+
+- Open source implementation of boosted trees
+- Fast efficient implementation
+- Good choice of default splitting criteria and criteria for when to stop splitting
+- Built in regularization to prevent overfitting
+- Highly competitive algorithm for machine learning competitions e.g. Kaggle competitions
+
+_note)_ Rather than doing something with replacement, XGBoost assigns different weights to different training examples; so it doesn't need to generate a lot of randomly chosen training sets, and this way is more efficient than sampling and replacement.
+
+_Classification_ using sample:
+
+```python
+from xgboost import XGBClassifier
+
+model = XGBClassifier()
+
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+```
+
+_Regression_ using sample:
+
+```python
+from xgboost import XGBRegressor
+
+model = XGBRegressor()
+
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+```
+
+## When to use decision trees
+
+Decision Trees and Tree ensembles
+
+- Works well on tabular (structured) data
+- Not recommended for unstructured data(images, audio, text)
+- It's very fast to train and predict
+- Small decision trees may be human interpretable
+
+Neural Networks
+
+- Works well on all types of daa, including tabular (structured) and unstructured data
+- May be slower than a decision tree
+- Works with transfer learning
+- When building a system of multiple models working together, it might be easier to string together multiple neural networks
