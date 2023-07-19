@@ -134,14 +134,15 @@ _note)_ In other activation functions $a_i$ was the function of $z_i$, but in So
 
 ```python
 import tensorflow as tf
-from tensorflow.keras import Sequential
+from tensorflow.keras import Input, Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 
 model = Sequential([
-                    Dense(units=25, activation='relu'),
-                    Dense(units=15, activation='relu')
-                    Dense(units=10, activation='softmax')
+    Input(shape=(400,)),
+    Dense(units=25, activation='relu'),
+    Dense(units=15, activation='relu')
+    Dense(units=10, activation='softmax')
 ])
 
 # sparse means that y can only take one of the categories
@@ -151,26 +152,36 @@ model.fit(X, Y, epochs=100)
 
 > Even though this code works, there is a better implementation for this purpose:
 
-If instead of computing the $a$ in `Sequential` model, we compute the $z$ and then calculate the $a$ by returned $z$, there will be less numerical round-off error and therefore the model will be more accurate.
+If instead of computing the softmax value as model output, we use linear function as the activation of the last layer; the numerical round-off error will be less and the model will be more accurate.
+
+In this practice:
+
+1. Set `linear` as activation of last layer
+2. Set the number of last layer units equal to the number of output classes
+3. Pass `from_logits=True` argument to loss function
+4. To get the probabilities, pass the predictions to the right activation in `tf.nn` namespace
+
+The default predictions will be varied positive and negative numbers instead of the probabilities. To just get the final result, we don't need to calculate the probabilities and we can just return the index of largest output number.
 
 ```python
 import tensorflow as tf
-from tensorflow.keras import Sequential
+from tensorflow.keras import Input, Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 
 model = Sequential([
-                    Dense(units=25, activation='relu'),
-                    Dense(units=15, activation='relu')
-                    Dense(units=10, activation='linear') # instead of the probability of each category, return a linear value and calculate the most probable category later
+    Input(shape=(400,)),
+    Dense(units=25, activation='relu'),
+    Dense(units=15, activation='relu')
+    Dense(units=10, activation='linear') # linear instead of softmax
 ])
 
-model.compile(loss=SparseCategoricalCrossentropy(from_logits=True)) # logits are z
+model.compile(loss=SparseCategoricalCrossentropy(from_logits=True)) # <- from_logits=True
 model.fit(X, Y, epochs=100)
 
-logits = model(X)
+logits = model.predict(X) # positive and negative numbers
 
-f_x = tf.nn.softmax(logits) # calculate the `a` from the output of the model
+f_x = tf.nn.softmax(logits) # calculate the probabilities
 ```
 
 ## Classification with multiple outputs
