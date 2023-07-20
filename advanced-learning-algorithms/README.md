@@ -1,6 +1,8 @@
 # [Advanced Learning Algorithms](https://www.coursera.org/learn/advanced-learning-algorithms)
 
-This is the second course of the [Machine Learning Specialization](https://www.coursera.org/specializations/machine-learning-introduction)
+This is my hand-written notes of the second course of the [Machine Learning Specialization](https://www.coursera.org/specializations/machine-learning-introduction).
+
+If you have identified any issues, I encourage you to submit them to the [issues](https://github.com/srezasm/course-notes/issues) or fix it and make a pull request.
 
 ## Notes
 
