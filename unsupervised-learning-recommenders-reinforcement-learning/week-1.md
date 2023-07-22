@@ -2,7 +2,7 @@
 
 ## K-means intuition
 
-<img src="assets/gif-1.gif" height="500px">
+<img src="assets/gif-01.gif" height="500px">
 
 K-means algorithms tries to find the clusters or groups of similar examples in a dataset.
 
@@ -64,4 +64,61 @@ Plot the cost function versus the number of clusters and pick the one that the a
 
 <img src="assets/img-04.jpg" height="300px">
 
+_note)_ There might not be any significant drop in decreasing of cost and the plot goes down smoothly, so this method may not work
+
 _tip)_ Try not to pick the one with least cost, because the amount of cost always decreases with increase of the number of clusters
+
+## Gaussian(Normal) Distribution
+
+Another name for this is _bell-shaped distribution_
+
+The formula for a single feature $x$ is:
+
+$$
+P(x) = \dfrac{1}{\sigma \sqrt {2 \pi}} e^{\dfrac{-\left({x - \mu }\right)^2}{2\sigma^2}}
+$$
+
+Where
+
+- $\sigma$ is the Standard division
+- $\sigma^2$ is the Variance
+- $\mu$ is the Mean
+- $e$ is the Euler's number
+- $\pi$ is the Pi
+
+The normal distribution chart is:
+
+<img src="assets/img-05.jpg" height="300px">
+
+The area under the chart is always equal to $1$, so:
+
+- The $y$ axis, shows the probability
+  - The two ends never become equal to absolute $0$
+- When the $\sigma$ increases, the chart becomes taller and thinner
+- When the $\sigma$ decreases, the chart becomes shorter
+
+And the center is equal to $\mu$, so for normal distribution, $\mu = 1$
+
+## Algorithm
+
+For a multi-feature dataset, the gaussian distribution is used as follows:
+
+$$
+p\left(\vec{x}\right) = p\left(x_1; \mu_1, \sigma^2_1\right) \times p\left(x_2; \mu_2, \sigma^2_2\right) \times p\left(x_3; \mu_3, \sigma^2_3\right) \times \dotsb \times p\left(x_n; \mu_n, \sigma^2_n\right) = \displaystyle{\Pi^{n}_{j=1}} p\left(x_j; \mu_j, \sigma^2_j\right)
+$$
+
+_note)_ As it shows, the algorithm works the best for features that are statistically independent, but often works fine for statistically dependent features too
+
+_tip)_ This algorithm follows the _multiplication rule_ in probability
+
+1. Choose $n$ features $x_i$ that you think might be indicative of anomalous examples
+2. Fit parameters $\mu_1\dotsb\mu_n,\sigma^2_1\dotsb\sigma^2_n$
+   
+   $\mu_j = \dfrac{1}{m} \displaystyle\sum^{m}_{i=1} x^{(i)}_j \qquad \sigma^2_j = \dfrac{1}{m} \displaystyle\sum^{m}_{i=1} \left(x^{(i)}_j - \mu_j \right)^2$
+
+   Vectorized formula:
+
+   $\vec{\mu} = \dfrac{1}{m}\sum^{m}_{i=1} \vec{x}^{(i)} \quad \vec{\mu} = \begin{matrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_n \end{matrix}$
+3. Given new examples $x$, compute
+   $p(x) = \displaystyle \prod^{n}_{j=1} p\left(x_j; \mu_j, \sigma^2_j\right) = \displaystyle \prod^{n}_{j=1} \dfrac{1}{\sigma_j \sqrt {2 \pi}}\ e^{\dfrac{-\left({x_j - \mu_j }\right)^2}{2\sigma^2_j}}$
+4. Anomaly if $p(x) < \epsilon$
