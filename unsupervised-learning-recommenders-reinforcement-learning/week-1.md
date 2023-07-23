@@ -36,7 +36,7 @@ $\mu_{k^{(i)}}$ = cluster centroid $k$ of cluster to which example $x^{(i)}$ has
 
 Cost function for K-means:
 
-$$J(c^{(1)}, \dotsb, c^{(m)}, \mu_1, \dotsb, \mu_K) = \dfrac{1}{m}\displaystyle\sum^{m}_{i=1} ||x^{(i)} - \mu_{c^{(i)}}||^2$$
+$$J(c^{(1)}, \dotsb, c^{(m)}, \mu_{1}, \dotsb, \mu_{K}) = \dfrac{1}{m} \displaystyle \sum_{i=1}^{m} ||x^{(i)} - \mu_{c^{(i)}}||^{2}$$
 
 _note)_ In K-means algorithm, the cost is also called the _Distortion_, so the objective of cost function is minimizing the distortion
 
@@ -75,7 +75,7 @@ Another name for this is _bell-shaped distribution_
 The formula for a single feature $x$ is:
 
 $$
-P(x) = \dfrac{1}{\sigma \sqrt {2 \pi}} e^{\dfrac{-\left({x - \mu }\right)^2}{2\sigma^2}}
+\large{p(x) = \dfrac{1}{\sigma \sqrt {2 \pi}} e^{\dfrac{-\left({x - \mu }\right)^2}{2\sigma^2}}}
 $$
 
 Where
@@ -113,12 +113,13 @@ _tip)_ This algorithm follows the _multiplication rule_ in probability
 
 1. Choose $n$ features $x_i$ that you think might be indicative of anomalous examples
 2. Fit parameters $\mu_1\dotsb\mu_n,\sigma^2_1\dotsb\sigma^2_n$
-   
-   $\mu_j = \dfrac{1}{m} \displaystyle\sum^{m}_{i=1} x^{(i)}_j \qquad \sigma^2_j = \dfrac{1}{m} \displaystyle\sum^{m}_{i=1} \left(x^{(i)}_j - \mu_j \right)^2$
+
+   $\mu_j = \dfrac{1}{m} \displaystyle \sum_{i=1}^{m} x_j^{(i)} \qquad \sigma_{j}^{2} = \dfrac{1}{m} \displaystyle \sum_{i=1}^{m} \left(x_{j}^{(i)} - \mu_{j} \right)^2$
 
    Vectorized formula:
 
-   $\vec{\mu} = \dfrac{1}{m}\sum^{m}_{i=1} \vec{x}^{(i)} \quad \vec{\mu} = \begin{matrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_n \end{matrix}$
+   $\vec{\mu} = \dfrac{1}{m} \displaystyle \sum_{i=1}^{m} \vec{x}^{(i)}$
+
 3. Given new examples $x$, compute
-   $p(x) = \displaystyle \prod^{n}_{j=1} p\left(x_j; \mu_j, \sigma^2_j\right) = \displaystyle \prod^{n}_{j=1} \dfrac{1}{\sigma_j \sqrt {2 \pi}}\ e^{\dfrac{-\left({x_j - \mu_j }\right)^2}{2\sigma^2_j}}$
+   $\large{p(x) = \displaystyle \prod_{j=1}^{n} p \left(x_{j}; \mu_{j}, \sigma_{j}^{2} \right) = \displaystyle \prod_{j=1}^{n} \dfrac{1}{\sigma_{j} \sqrt {2 \pi}}\ e^{\dfrac{-\left({x_{j} - \mu_{j}} \right)^{2}}{2\sigma^2_{j}}}}$
 4. Anomaly if $p(x) < \epsilon$
