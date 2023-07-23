@@ -101,7 +101,7 @@ And the center is equal to $\mu$, so for normal distribution, $\mu = 1$
 
 ## Algorithm
 
-For a multi-feature dataset, the gaussian distribution is used as follows:
+For a multi-feature dataset, the gaussian distribution is calculated for each feature individually:
 
 $$
 p\left(\vec{x}\right) = p\left(x_1; \mu_1, \sigma^2_1\right) \times p\left(x_2; \mu_2, \sigma^2_2\right) \times p\left(x_3; \mu_3, \sigma^2_3\right) \times \dotsb \times p\left(x_n; \mu_n, \sigma^2_n\right) = \displaystyle{\Pi^{n}_{j=1}} p\left(x_j; \mu_j, \sigma^2_j\right)
@@ -123,3 +123,62 @@ _tip)_ This algorithm follows the _multiplication rule_ in probability
 3. Given new examples $x$, compute
    $\large{p(x) = \displaystyle \prod_{j=1}^{n} p \left(x_{j}; \mu_{j}, \sigma_{j}^{2} \right) = \displaystyle \prod_{j=1}^{n} \dfrac{1}{\sigma_{j} \sqrt {2 \pi}}\ e^{\dfrac{-\left({x_{j} - \mu_{j}} \right)^{2}}{2\sigma^2_{j}}}}$
 4. Anomaly if $p(x) < \epsilon$
+
+## Developing and evaluating an anomaly detection system
+
+Over the time, we can make sure of some anomaly examples in the gathered dataset, we can use these features to evaluate out anomaly detection system.
+
+We can break the dataset into train/test/CV sets and adjust the $\epsilon$ on training set to fit the anomalous examples the best and then measure the overfit and accuracy by test/CV sets.
+
+1. Fit model $p(x)$ on training set $x^{(1)}, x^{(2)}, \dotsb, x^{(m)}$
+2. On a cross validation/test example $x$, predict $y = \begin{cases} 1 \quad \text{if} p(x) < \epsilon \text{(anomaly)} \\ 0 \quad \text{if} p(x) \geq \epsilon \text{(anomaly)} \end{cases}$
+
+## Anomaly detection vs. supervised learning
+
+### Differences
+
+| Anomaly detection                                                                                                                                                                                                 | Supervised learning                                                                                                                                              |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Very small number of positive examples and large number of negative examples                                                                                                                                      | Large number of positive and negative examples                                                                                                                   |
+| Many different "types" of anomalies. Hard for any algorithm to learn from positive examples what the anomalies look like; future anomalies may look nothing like any of the anomalous examples we've seen so far. | Enough positive examples for algorithm to get a sense of what positive examples are like, future positive examples likely to be similar to ones in training set. |
+
+### Use cases
+
+| Anomaly detection                                                                              | Supervised learning                                    |
+|------------------------------------------------------------------------------------------------|--------------------------------------------------------|
+| Fraud detection                                                                                | Email spam classification                              |
+| Manufacturing - Finding new previously unseen defects in manufacturing(e.g. aircraft engines)  | Manufacturing - Finding known, previously seen defects |
+| Monitoring machines in a data center                                                           | Weather prediction                                     |
+|                                                                                                | Diseases classification                                |
+
+## Choosing what features to use
+
+Choosing a good feature in anomaly detection is more important than in supervised learning.
+
+Here are some ways of feature engineering for anomaly detection:
+
+### Non-gaussian features
+
+Plot the histogram of features and see if they're gaussian or not
+
+<img src="assets/img-06.jpg" height="300px">
+
+If thy're not, try to make them gaussian
+
+<img src="assets/img-07.jpg" height="300px">
+
+Other than $\log$ function there are other ways too:
+
+- $\log\left(x_2 + 1\right)$
+- $\displaystyle\sqrt{x_3}$
+- $\displaystyle x_4^{1/3}$
+
+### Error analysis for anomaly detection
+
+The most common problem is that an actual anomalous example doesn't get classified as anomaly. To fix this, we can think of a feature that we've missed to include and thus resulted in the misclassification.
+
+For example, in fraud detection, based on the number of transactions, a user is classified as non-anomalous, but if we also consider the typing speed, we see that this user has an insanely faster typing speed than the normal users.
+
+Another way to fix anomaly detection problem is combining features, for example in a data center, a server might has individually non-anomalous hight CPU load and low network traffic, but if we create a new feature and combine these features together, we see that it's uncommon.
+
+<img src="assets/img-08.jpg" height="300px">
