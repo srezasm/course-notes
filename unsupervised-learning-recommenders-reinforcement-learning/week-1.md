@@ -179,6 +179,6 @@ The most common problem is that an actual anomalous example doesn't get classifi
 
 For example, in fraud detection, based on the number of transactions, a user is classified as non-anomalous, but if we also consider the typing speed, we see that this user has an insanely faster typing speed than the normal users.
 
-Another way to fix anomaly detection problem is combining features, for example in a data center, a server might has individually non-anomalous hight CPU load and low network traffic, but if we create a new feature and combine these features together, we see that it's uncommon.
+Another way to fix anomaly detection problem is combining features; for example in a data center, a server might have individually non-anomalous high CPU load and low network traffic, but if we combine these features into a new feature, we see that it's uncommon.
 
 <img src="assets/img-08.jpg" height="300px">
