@@ -121,8 +121,94 @@ In collaborative filtering, the cost function is a function of $W$, $b$ and $x$;
 
 repeat: {
     
-- $W^{(j)}_{i} = W^{(j)}_{i} - \alpha \dfrac{\partial}{\partial W^{(j)}_{i}} J\left(W, b, x\right)$
+- $W_{i}^{(j)} = W_{i}^{(j)} - \alpha \dfrac{\partial}{\partial W_{i}^{(j)}} J\left(W, b, x\right)$
 - $b^{(j)} = b^{(j)} - \alpha \dfrac{\partial}{\partial b^{(j)}} J\left(W, b, x\right)$
-- $x^{(i)}_{k} = x^{(i)}_{k} - \alpha \dfrac{\partial}{\partial x^{(i)}_{k}} J\left(W, b, x\right)$
+- $x_{k}^{(i)} = x_{k}^{(i)} - \alpha \dfrac{\partial}{\partial x_{k}^{(i)}} J\left(W, b, x\right)$
 
 }
+
+## Binary labels: favs, likes and clicks
+
+In real-world applications, there are a lot of other features besides rating that can be used in recommendation systems and collaborative filtering.
+
+| Movie                | Alice(1) | Bob(2) | Carol(3) | Dave(4) |
+|----------------------|----------|--------|----------|---------|
+| Love at last         | 1        | 1      | 0        | 0       |
+| Romance forever      | 1        | ?      | ?        | 0       |
+| Cute puppies of love | ?        | 1      | 0        | ?       |
+| Nonstop car chases   | 0        | 0      | 1        | 1       |
+| Swords vs. karate    | 0        | 0      | 1        | ?       |
+
+Here are some examples of what the binary numbers can mean:
+
+- Did user $j$ purchase an item after being shown?
+- Did user $j$ fav/like an item?
+- Did user $j$ spend at least 30sec with an item?
+- Did user $j$ click on an item?
+
+### From regression to binary classification
+
+- Previously:
+  - Predict $y^{(i,j)}$ as $W^{(j)} \cdot x^{(i)} + b^{(j)}$
+- For binary classification:
+  - Predict that the probability of $y^{(i,j)} = 1$ is given by $g(W^{(j)} \cdot x^{(i)} + b^{(j)})$
+  - Where $g(z) = \dfrac{1}{1 + e^{-z}}$
+
+### Cost function for binary classification
+
+- Previous cost function:
+  - $\large \dfrac{1}{2} \displaystyle \sum_{(i,j):r(i,j) = 1} \left(W^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{k=1}^{n} \left(W_{k}^{(j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{k=1}^{n} \left(x_{k}^{(i)}\right)^2$
+- Loss for binary labels: $\large y^{(i,j)}: f_{{W,b,x}}(x) = g(W^{(j)} \cdot x^{(i)} + b^{(j)})$
+  - $\large L(f_{{W,b,x}}(x), y^{(i,j)}) = - y^{(i,j)} \log \left(f_{{W,b,x}}(x)\right) - \left(1 - y^{(i,j)}\right) \log \left(1 - f_{{W,b,x}}(x) \right)$
+  - $\large J(W, b, x) = \sum_{(i,j):r(i,j) = 1} \left(f_{{W,b,x}}(x), y^{(i,j)} \right)$
+  - Where $\large f_{{W,b,x}}(x) = g\left(W^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)$
+
+## Mean normalization
+
+First we add a new user Eve with no ratings:
+
+| Movie                | Alice(1) | Bob(2) | Carol(3) | Dave(4) | Eve(2) |
+|----------------------|----------|--------|----------|---------|--------|
+| Love at last         | 5        | 5      | 0        | 0       | ?      |
+| Romance forever      | 5        | ?      | ?        | 0       | ?      |
+| Cute puppies of love | ?        | 4      | 0        | ?       | ?      |
+| Nonstop car chases   | 0        | 0      | 5        | 4       | ?      |
+| Swords vs. karate    | 0        | 0      | 5        | ?       | ?      |
+
+The parameters that the current system will come up are: $W^{(5)} = \begin{matrix} 0 \\ 0 \end{matrix}\qquad b^{(5)} = 0$. So the Eves predicted ratings for all movies will be $0$, and it's not good.
+
+### Algorithm
+
+We will take all of ratings into a matrix and take the average of each row into a new vector $\mu$, and finally subtract the $\mu$ from initial ratings matrix:
+
+$$
+\begin{matrix}
+    5 & 5 & 0 & 0  & ? \\
+    5 & ? & ? & 0  & ? \\
+    ? & 4 & 0 & ?  & ? \\
+    0 & 0 & 5 & 4  & ? \\
+    0 & 0 & 5 & ?  & ? \\
+\end{matrix}
+\qquad \mu =
+\begin{matrix}
+    2.5 \\
+    2.5 \\
+    2 \\
+    2.25 \\
+    1.25 \\
+\end{matrix}
+\qquad
+\begin{matrix}
+2.5   & 2.5   & -2.5 & -2.5  & ? \\
+2.5   & ?     & ?    & -2.5  & ? \\
+?     & 2     & -2   & ?     & ? \\
+-2.25 & -2.25 & 2.75 & 1.75  & ? \\
+-2.25 & -1.25 & 3.75 & -1.25 & ? \\
+\end{matrix}
+$$
+
+And now the final matrix will be our new $y^{(i,j)}$, and the system will learn based on it.
+
+Furthermore, because we subtracted $\mu$, for user $j$ on movie $i$, we predict: $W^{(j)} \cdot x^{(i)} + b^{(j)} {\bf + \mu_{i}}$
+
+Now even though we still have initial parameters of $W^{(5)} = \begin{matrix} 0 \\ 0 \\ \end{matrix}\quad b^{(5)} = 0$ for Eve, the resulting prediction will be $0 - \mu$, on which we can show him the highest rated movies at first.
