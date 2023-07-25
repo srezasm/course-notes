@@ -35,31 +35,31 @@ Notation:
 
 - $r(i, j) = 1$ if user $j$ has rated movie $i$ ($0$ otherwise)
 - $y^{(i, j)}$ = rating given by user $j$ to movie $i$ (if defined)
-- $W^{(i)}, b^{(i)}$ = parameters for user $j$
+- $\mathbf{w}^{(i)}, b^{(i)}$ = parameters for user $j$
 - $x^{(i)}$ = feature vector for movie $i$
 - $m^{(j)}$ = no. of movies rated by user $j$
 
-For user $j$ and movie $i$, predict rating: $W^{(j)} \cdot x^{(i)} + b^{(j)}$
+For user $j$ and movie $i$, predict rating: $\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)}$
 
 **Cost function:**
 
 $$
-\large \underset{W^{(j)} b^{(j)}}{\text{min}} J(W^{(j)}, b^{(j)}) = \dfrac{1}{2} \displaystyle \sum_{i:r(i,j) = 1} \left(W^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{k=1}^{n} \left(W_{k}^{(j)}\right)^2
+\large \underset{\mathbf{w}^{(j)} b^{(j)}}{\text{min}} J(\mathbf{w}^{(j)}, b^{(j)}) = \dfrac{1}{2} \displaystyle \sum_{i:r(i,j) = 1} \left(\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{k=1}^{n} \left(\mathbf{w}_{k}^{(j)}\right)^2
 $$
 
 _note)_ The $\displaystyle \sum_{i:r(i,j) = 1}$ denotes the sum of all movies $i$ that user $j$ has already rated
 
 In recommendation systems, since $m^{(j)}$ is just a constant, it's convenient to use $\dfrac{\lambda}{2}$ instead of $\dfrac{\lambda}{2m^{(j)}}$ in divisions.
 
-Now to learn parameters $W^{(1)}, b^{(1)}, \dotsb, W^{(n_u)}, b^{(n_u)}$ for all users:
+Now to learn parameters $\mathbf{w}^{(1)}, b^{(1)}, \dotsb, \mathbf{w}^{(n_u)}, b^{(n_u)}$ for all users:
 
 $$
 \large J
 \begin{pmatrix}
-    W^{(1)}, \dotsb, W^{(n_u)} \\
+    \mathbf{w}^{(1)}, \dotsb, \mathbf{w}^{(n_u)} \\
     b^{(1)}, \dotsb, b^{(n_u)} \\
 \end{pmatrix}
-= \dfrac{1}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{i:r(i,j) = 1} \left(W^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{k=1}^{n} \left(W_{k}^{(j)}\right)^2
+= \dfrac{1}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{i:r(i,j) = 1} \left(\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{k=1}^{n} \left(\mathbf{w}_{k}^{(j)}\right)^2
 $$
 
 ## Collaborative filtering algorithm
@@ -80,50 +80,61 @@ Where we don't have any feature for examples, but instead we have the users inte
 
 In this example, although we don't have any features corresponding to each movie, we have the users ratings, and using these ratings beside the target users ratings, we can predict the feature ratings of the target user!
 
-Given $W^{(1)}, b^{(1)}, \dotsb, W^{(n_u)}, b^{(n_u)}$  
+Given $\mathbf{w}^{(1)}, b^{(1)}, \dotsb, \mathbf{w}^{(n_u)}, b^{(n_u)}$  
 to learn $x^{(i)}$:
 
 $$
-\large J(x^{(i)}) = \dfrac{1}{2} \displaystyle \sum_{j:r(i,j) = 1} \left(W^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{k=1}^{n} \left(x_{k}^{(i)}\right)^2
+\large J(x^{(i)}) = \dfrac{1}{2} \displaystyle \sum_{j:r(i,j) = 1} \left(\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{k=1}^{n} \left(x_{k}^{(i)}\right)^2
 $$
 
-_note)_ Notice unlike the $J(W^{(j)}, b^{(j)})$, we used $\displaystyle \sum_{j:r(i,j) = 1}$, to determine the sum all users $j$ that have rated the movie $i$ and the regularization term is also different
+_note)_ Notice unlike the $J(\mathbf{w}^{(j)}, b^{(j)})$, we used $\displaystyle \sum_{j:r(i,j) = 1}$, to determine the sum all users $j$ that have rated the movie $i$ and the regularization term is also different
 
 Now to learn $x^{(1)}, \dotsb, x^{(n_m)}$:
 
 $$
-\large J(x^{(1)}, \dotsb, x^{(n_m)}) = \dfrac{1}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{j:r(i,j) = 1} \left(W^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{k=1}^{n} \left(x_{k}^{(i)}\right)^2
+\large J(x^{(1)}, \dotsb, x^{(n_m)}) = \dfrac{1}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{j:r(i,j) = 1} \left(\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{k=1}^{n} \left(x_{k}^{(i)}\right)^2
 $$
 
 ### Algorithm
 
-Cost function to learn $W^{(1)}, b^{(1)}, \dotsb, W^{(n_u)}, b^{(n_u)}$:
+Cost function to learn $\mathbf{w}^{(1)}, b^{(1)}, \dotsb, \mathbf{w}^{(n_u)}, b^{(n_u)}$:
 
 $$
-\large \underset{W^{(1)}, b^{(1)}, \dotsb, W^{(n_u)}, b^{(n_u)}}{\text{min}}\ \dfrac{1}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{i:r(i,j) = 1} \left(W^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{k=1}^{n} \left(W_{k}^{(j)}\right)^2
+\large \underset{\mathbf{w}^{(1)}, b^{(1)}, \dotsb, \mathbf{w}^{(n_u)}, b^{(n_u)}}{\text{min}}\ \dfrac{1}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{i:r(i,j) = 1} \left(\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{k=1}^{n} \left(\mathbf{w}_{k}^{(j)}\right)^2
 $$
 
 Cost function to learn $x^{(1)}, \dotsb, x^{(n_m)}$:
 
 $$
-\large \underset{x^{(1)}, \dotsb, x^{(n_m)}}{\text{min}}\ \dfrac{1}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{j:r(i,j) = 1} \left(W^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{k=1}^{n} \left(x_{k}^{(i)}\right)^2
+\large \underset{x^{(1)}, \dotsb, x^{(n_m)}}{\text{min}}\ \dfrac{1}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{j:r(i,j) = 1} \left(\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{k=1}^{n} \left(x_{k}^{(i)}\right)^2
 $$
 
-Put them together:
+Putting them together, the collaborative filtering cost function is given by:
+
+$$J({\mathbf{x}^{(1)},...,\mathbf{x}^{(n_m)},\mathbf{w}^{(1)},b^{(1)},...,\mathbf{w}^{(n_u)},b^{(n_u)}})= \left[ \frac{1}{2}\sum_{(i,j):r(i,j)=1}(\mathbf{w}^{(j)} \cdot \mathbf{x}^{(i)} + b^{(j)} - y^{(i,j)})^2 \right]
++ \underbrace{\left[
+\frac{\lambda}{2}
+\sum_{j=1}^{n_u}\sum_{k=1}^{n}(\mathbf{w}^{(j)}_k)^2
++ \frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^{n}(\mathbf{x}_k^{(i)})^2
+\right]}_{regularization}
+\tag{1}$$
+
+The first summation in (1) is "for all $i$, $j$ where $r(i,j)$ equals $1$" and could be written:
 
 $$
-\large \underset{\begin{pmatrix} W^{(1)}, \dotsb, W^{(n_u)} \\ b^{(1)}, \dotsb, b^{(n_u)} \\ x^{(1)}, \dotsb, x^{(n_m)} \end{pmatrix}}{\text{min}}\ \dfrac{1}{2} \displaystyle \sum_{(i,j):r(i,j) = 1} \left(W^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{k=1}^{n} \left(W_{k}^{(j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{k=1}^{n} \left(x_{k}^{(i)}\right)^2
+= \left[ \frac{1}{2}\sum_{j=1}^{n_u} \sum_{i=1}^{n_m}r(i,j)*(\mathbf{w}^{(j)} \cdot \mathbf{x}^{(i)} + b^{(j)} - y^{(i,j)})^2 \right]
++\text{regularization}
 $$
 
 ### Gradient Descent
 
-In collaborative filtering, the cost function is a function of $W$, $b$ and $x$; so the optimization function should be so:
+In collaborative filtering, the cost function is a function of $\mathbf{w}$, $b$ and $x$; so the optimization function should be so:
 
 repeat: {
     
-- $W_{i}^{(j)} = W_{i}^{(j)} - \alpha \dfrac{\partial}{\partial W_{i}^{(j)}} J\left(W, b, x\right)$
-- $b^{(j)} = b^{(j)} - \alpha \dfrac{\partial}{\partial b^{(j)}} J\left(W, b, x\right)$
-- $x_{k}^{(i)} = x_{k}^{(i)} - \alpha \dfrac{\partial}{\partial x_{k}^{(i)}} J\left(W, b, x\right)$
+- $\mathbf{w}_{i}^{(j)} = \mathbf{w}_{i}^{(j)} - \alpha \dfrac{\partial}{\partial \mathbf{w}_{i}^{(j)}} J\left(\mathbf{w}, b, x\right)$
+- $b^{(j)} = b^{(j)} - \alpha \dfrac{\partial}{\partial b^{(j)}} J\left(\mathbf{w}, b, x\right)$
+- $x_{k}^{(i)} = x_{k}^{(i)} - \alpha \dfrac{\partial}{\partial x_{k}^{(i)}} J\left(\mathbf{w}, b, x\right)$
 
 }
 
@@ -149,19 +160,19 @@ Here are some examples of what the binary numbers can mean:
 ### From regression to binary classification
 
 - Previously:
-  - Predict $y^{(i,j)}$ as $W^{(j)} \cdot x^{(i)} + b^{(j)}$
+  - Predict $y^{(i,j)}$ as $\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)}$
 - For binary classification:
-  - Predict that the probability of $y^{(i,j)} = 1$ is given by $g(W^{(j)} \cdot x^{(i)} + b^{(j)})$
+  - Predict that the probability of $y^{(i,j)} = 1$ is given by $g(\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)})$
   - Where $g(z) = \dfrac{1}{1 + e^{-z}}$
 
 ### Cost function for binary classification
 
 - Previous cost function:
-  - $\dfrac{1}{2} \displaystyle \sum_{(i,j):r(i,j) = 1} \left(W^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{k=1}^{n} \left(W_{k}^{(j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{k=1}^{n} \left(x_{k}^{(i)}\right)^2$
-- Loss for binary labels: $y^{(i,j)}: f_{{W,b,x}}(x) = g(W^{(j)} \cdot x^{(i)} + b^{(j)})$
-  - $L(f_{{W,b,x}}(x), y^{(i,j)}) = - y^{(i,j)} \log \left(f_{{W,b,x}}(x)\right) - \left(1 - y^{(i,j)}\right) \log \left(1 - f_{{W,b,x}}(x) \right)$
-  - $J(W, b, x) = \sum_{(i,j):r(i,j) = 1} \left(f_{{W,b,x}}(x), y^{(i,j)} \right)$
-  - Where $f_{{W,b,x}}(x) = g\left(W^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)$
+  - $\dfrac{1}{2} \displaystyle \sum_{(i,j):r(i,j) = 1} \left(\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{k=1}^{n} \left(\mathbf{w}_{k}^{(j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{k=1}^{n} \left(x_{k}^{(i)}\right)^2$
+- Loss for binary labels: $y^{(i,j)}: f_{{\mathbf{w},b,x}}(x) = g(\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)})$
+  - $L(f_{{\mathbf{w},b,x}}(x), y^{(i,j)}) = - y^{(i,j)} \log \left(f_{{\mathbf{w},b,x}}(x)\right) - \left(1 - y^{(i,j)}\right) \log \left(1 - f_{{\mathbf{w},b,x}}(x) \right)$
+  - $J(\mathbf{w}, b, x) = \sum_{(i,j):r(i,j) = 1} \left(f_{{\mathbf{w},b,x}}(x), y^{(i,j)} \right)$
+  - Where $f_{{\mathbf{w},b,x}}(x) = g\left(\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)$
 
 ## Mean normalization
 
@@ -175,7 +186,7 @@ First we add a new user Eve with no ratings:
 | Nonstop car chases   | 0        | 0      | 5        | 4       | ?      |
 | Swords vs. karate    | 0        | 0      | 5        | ?       | ?      |
 
-The parameters that the current system will come up are: $W^{(5)} = [0, 0] \quad b^{(5)} = 0$. So the Eves predicted ratings for all movies will be $0$, and it's not good.
+The parameters that the current system will come up are: $\mathbf{w}^{(5)} = [0, 0] \quad b^{(5)} = 0$. So the Eves predicted ratings for all movies will be $0$, and it's not good.
 
 ### Algorithm
 
@@ -209,9 +220,9 @@ $$
 
 And now the final matrix will be our new $y^{(i,j)}$, and the system will learn based on it.
 
-Furthermore, because we subtracted $\mu$, for user $j$ on movie $i$, we predict: $W^{(j)} \cdot x^{(i)} + b^{(j)} {\bf + \mu_{i}}$
+Furthermore, because we subtracted $\mu$, for user $j$ on movie $i$, we predict: $\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)} {\bf + \mu_{i}}$
 
-Now even though we still have initial parameters of $W^{(5)} = [0, 0] \quad b^{(5)} = 0$ for Eve, the resulting prediction will be $0 - \mu$, on which we can show him the highest rated movies at first.
+Now even though we still have initial parameters of $\mathbf{w}^{(5)} = [0, 0] \quad b^{(5)} = 0$ for Eve, the resulting prediction will be $0 - \mu$, on which we can show him the highest rated movies at first.
 
 _note)_ We can take the averages from columns too, but that would be useful when we want to predict the features of a new movie instead of a new user
 

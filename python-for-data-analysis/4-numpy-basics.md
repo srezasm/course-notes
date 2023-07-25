@@ -32,7 +32,7 @@ a1 = arch['a1']
 a2 = arch['a2']
 ```
 
-If the data compresses well, use the bellow function:
+If the data compresses well, use the below function:
 
 ```python
 np.savez_compressed('file_name.npz', a1=np.arange(10), a2=np.arange(10, 20))
@@ -78,8 +78,8 @@ Example implementation of a random walk application in pure python and numpy way
 import random
 position = 0
 for i in range(1000):
-	step = 1 if random.randint(0, 1) else -1
-	position += step
+    step = 1 if random.randint(0, 1) else -1
+    position += step
 
 # Numpy
 draws = np.random.randint(0, 2, size=1000) # generate array of random 0 & 1 with the length of steps
