@@ -109,21 +109,10 @@ $$
 \large \underset{x^{(1)}, \dotsb, x^{(n_m)}}{\text{min}}\ \dfrac{1}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{j:r(i,j) = 1} \left(\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{k=1}^{n} \left(x_{k}^{(i)}\right)^2
 $$
 
-Putting them together, the collaborative filtering cost function is given by:
-
-$$J({\mathbf{x}^{(1)},...,\mathbf{x}^{(n_m)},\mathbf{w}^{(1)},b^{(1)},...,\mathbf{w}^{(n_u)},b^{(n_u)}})= \left[ \frac{1}{2}\sum_{(i,j):r(i,j)=1}(\mathbf{w}^{(j)} \cdot \mathbf{x}^{(i)} + b^{(j)} - y^{(i,j)})^2 \right]
-+ \underbrace{\left[
-\frac{\lambda}{2}
-\sum_{j=1}^{n_u}\sum_{k=1}^{n}(\mathbf{w}^{(j)}_k)^2
-+ \frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^{n}(\mathbf{x}_k^{(i)})^2
-\right]}_{regularization}
-\tag{1}$$
-
-The first summation in (1) is "for all $i$, $j$ where $r(i,j)$ equals $1$" and could be written:
+Put them together:
 
 $$
-= \left[ \frac{1}{2}\sum_{j=1}^{n_u} \sum_{i=1}^{n_m}r(i,j)*(\mathbf{w}^{(j)} \cdot \mathbf{x}^{(i)} + b^{(j)} - y^{(i,j)})^2 \right]
-+\text{regularization}
+\large \underset{\begin{pmatrix} \mathbf{w}^{(1)}, \dotsb, \mathbf{w}^{(n_u)} \\ b^{(1)}, \dotsb, b^{(n_u)} \\ x^{(1)}, \dotsb, x^{(n_m)} \end{pmatrix}}{\text{min}}\ \dfrac{1}{2} \displaystyle \sum_{(i,j):r(i,j) = 1} \left(\mathbf{w}^{(j)} \cdot x^{(i)} + b^{(j)} - y^{(i, j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{j=1}^{n_u} \displaystyle \sum_{k=1}^{n} \left(\mathbf{w}_{k}^{(j)}\right)^2 + \dfrac{\lambda}{2} \displaystyle \sum_{i=1}^{n_m} \displaystyle \sum_{k=1}^{n} \left(x_{k}^{(i)}\right)^2
 $$
 
 ### Gradient Descent
@@ -131,7 +120,7 @@ $$
 In collaborative filtering, the cost function is a function of $\mathbf{w}$, $b$ and $x$; so the optimization function should be so:
 
 repeat: {
-    
+
 - $\mathbf{w}_{i}^{(j)} = \mathbf{w}_{i}^{(j)} - \alpha \dfrac{\partial}{\partial \mathbf{w}_{i}^{(j)}} J\left(\mathbf{w}, b, x\right)$
 - $b^{(j)} = b^{(j)} - \alpha \dfrac{\partial}{\partial b^{(j)}} J\left(\mathbf{w}, b, x\right)$
 - $x_{k}^{(i)} = x_{k}^{(i)} - \alpha \dfrac{\partial}{\partial x_{k}^{(i)}} J\left(\mathbf{w}, b, x\right)$
