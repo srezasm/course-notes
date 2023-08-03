@@ -3,7 +3,7 @@
 ## Making recommendations
 
 | Movie                | Alice(1) | Bob(2) | Carol(3) | Dave(4) |
-|----------------------|----------|--------|----------|---------|
+| -------------------- | -------- | ------ | -------- | ------- |
 | Love at last         | 5        | 5      | 0        | 0       |
 | Romance forever      | 5        | ?      | ?        | 0       |
 | Cute puppies of love | ?        | 4      | 0        | ?       |
@@ -24,7 +24,7 @@ Now, given the users rated movies, we can predict the rating of other movies for
 Lets add two features for movies
 
 | Movie                | Alice(1) | Bob(2) | Carol(3) | Dave(4) | $x_1$ <br> (romance) | $x_2$ <br> (action) |
-|----------------------|----------|--------|----------|---------|----------------------|---------------------|
+| -------------------- | -------- | ------ | -------- | ------- | -------------------- | ------------------- |
 | Love at last         | 5        | 5      | 0        | 0       | 0.9                  | 0                   |
 | Romance forever      | 5        | ?      | ?        | 0       | 1.0                  | 0.01                |
 | Cute puppies of love | ?        | 4      | 0        | ?       | 0.99                 | 0                   |
@@ -69,7 +69,7 @@ $$
 What if we didn't have the $x_1$ and $x_2$ features?
 
 | Movie                | Alice(1) | Bob(2) | Carol(3) | Dave(4) | $x_1$ <br> (romance) | $x_2$ <br> (action) |
-|----------------------|----------|--------|----------|---------|----------------------|---------------------|
+| -------------------- | -------- | ------ | -------- | ------- | -------------------- | ------------------- |
 | Love at last         | 5        | 5      | 0        | 0       | ?                    | ?                   |
 | Romance forever      | 5        | ?      | ?        | 0       | ?                    | ?                   |
 | Cute puppies of love | ?        | 4      | 0        | ?       | ?                    | ?                   |
@@ -132,7 +132,7 @@ repeat: {
 In real-world applications, there are a lot of other features besides rating that can be used in recommendation systems and collaborative filtering.
 
 | Movie                | Alice(1) | Bob(2) | Carol(3) | Dave(4) |
-|----------------------|----------|--------|----------|---------|
+| -------------------- | -------- | ------ | -------- | ------- |
 | Love at last         | 1        | 1      | 0        | 0       |
 | Romance forever      | 1        | ?      | ?        | 0       |
 | Cute puppies of love | ?        | 1      | 0        | ?       |
@@ -168,7 +168,7 @@ Here are some examples of what the binary numbers can mean:
 First we add a new user Eve with no ratings:
 
 | Movie                | Alice(1) | Bob(2) | Carol(3) | Dave(4) | Eve(2) |
-|----------------------|----------|--------|----------|---------|--------|
+| -------------------- | -------- | ------ | -------- | ------- | ------ |
 | Love at last         | 5        | 5      | 0        | 0       | ?      |
 | Romance forever      | 5        | ?      | ?        | 0       | ?      |
 | Cute puppies of love | ?        | 4      | 0        | ?       | ?      |
@@ -252,10 +252,10 @@ for iter in range (iterations):
     # Use TensorFlow's GradientTape
     # to record the operations used to compute the cost
     with tf.GradientTape () as tape:
-    
+
         # Compute the cost (forward pass is included in cost)
         cost_value = cofiCostFuncV(X, W, b, Ynorm, R, num_users, num_movies, lambda)
-    
+
     # Use the gradient tape to automatically retrieve
     # the gradients of the trainable variables with respect to the loss
     grads = tape.gradient(cost_value, [X, W, b])
@@ -286,3 +286,97 @@ Use side information about items or users:
 
 - Item: Genre, movie stars, studio, .
 - User: Demographics (age, gender, location), expressed preferences, ...
+
+## Collaborative filtering vs. Content-based filtering
+
+- Collaborative filtering:
+
+  Recommend items to you based on ratings of users who gave similar ratings as you
+
+- Content-based filtering:
+
+  Recommend items to you based on features of user and item to find good match
+
+So based on the features of a movie ($X_m$) and user($X_u$), we'll have to come up with a two vectors with the same size ($V_m \And V_u$), so we can take the dot product of them.
+
+Our approach to create the $V_m$ and $V_u$ will be deep neural networks.
+
+## Deep learning for content-based filtering
+
+<img src="assets/img-09.jpg" height="300px">
+
+We'll need two different networks, in order to generate the $V_m$ and $V_u$. Although the networks are different in input and hidden layers, the output size should be similar, so we can calculate the dot product of them in order to predict the $y^{(i, j)}$
+
+$$
+g(\mathbf{v^{(j)}_u} \cdot \mathbf{v^{(i)}_m})\ \text{to predict the probability that}\ y^{(i, j)}\ \text{is}\ 1
+$$
+
+Cost function:
+
+$$
+J = \sum_{i:r(i,j) = 1} (\mathbf{v^{(j)}_u} \cdot \mathbf{v^{(i)}_m} - y^{(i, j)})^2 + \text{NN regularization term}
+$$
+
+Learned user and item vectors:
+
+- $\mathbf{v^{(j)}_u}$ is a vector of length 32 that describes user $j$ with features $\mathbf{x^{(j)}_u}$
+- $\mathbf{v^{(i)}_m}$ is a vector of length 32 that describes movie $i$ with features $\mathbf{x^{(i)}_m}$
+
+
+To find movies similar to movie $i$, find the movies with smallest squared error: $\left|\left|\mathbf{V^{(k)}_m} - \mathbf{V^{(i)}_m}\right|\right|^2$
+
+_note)_ The can be run ahead of the time, meaning that it could be run over night to find all the similar movies to all movies and store them, in order to have a faster response when requested.
+
+## Recommendation from a large catalogue
+
+Running this algorithm every time a user shows up in the website would be computationally very expensive. 
+
+1. Retrieval:
+  - Generate large list of plausible item candidates e.g.
+    1. For each of the last 10 movies watched by the user, find 10 most similar movies
+    2. For most viewed 3 genres, find the top 10 movies
+    3. Top 20 movies in the country
+  - Combine retrieved items into list, removing duplicates and items already watched/purchased>
+2. Ranking
+   - Take list retrieved and rank using learned model
+   - Display ranked items to user
+
+One of the key decisions is how many items to retrieve.
+
+- Retrieving more items results in better performance, but slower recommendations.
+- To analyze the trade-off, we can carry out offline experiments to see if retrieving more items results in more relevant recommendations.
+
+## Tensorflow implementation of content-base filtering
+
+```python
+user_NN = tf.keras.models.Sequential([
+  tf.keras.layers.Dense(256, activation='relu'),
+  tf.keras.layers.Dense(128, activation='relu'),
+  tf.keras.layers.Dense(32)
+])
+
+item_NN = tf.keras.models.Sequential([
+  tf.keras.layers.Dense(256, activation='relu'),
+  tf.keras.layers.Dense(128, activation='relu'),
+  tf.keras.layers.Dense(32)
+])
+
+# create the user input and point to the base network
+input_user = tf.keras.layers.Input(shape=(num_user_features))
+vu = user_NN(input_user)
+vu = tf.linalg.l2_normalize(vu, axis=1)
+
+# create the item input and point to the base network
+input_item = tf.keras.layers.Input(shape=(num_item_features))
+vm = item_NN(input_item)
+vm = tf.linalg.l2_normalize(vm, axis=1)
+
+# measure the similarity of two vector outputs
+output = tf.keras.layers.Dot(axes=1)([vu, vm])
+
+# specify the inputs and output of the model
+model = tf.keras.Model([input_user, input_item], output)
+
+# specify the cost function
+cost_fn = tf.keras.losses.MeanSquaredError()
+```
