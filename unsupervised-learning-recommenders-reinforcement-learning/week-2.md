@@ -380,3 +380,87 @@ model = tf.keras.Model([input_user, input_item], output)
 # specify the cost function
 cost_fn = tf.keras.losses.MeanSquaredError()
 ```
+
+## Reducing the number of features
+
+When we're dealing with a lot of features, say a thousand, we can't plot a 1000 dimensional graph to see how the features are related to each other. So we can use PCA to reduce the number of features to 2 or 3 and plot them.
+
+Let's take a two feature set of examples for the sake of simplicity in explaining the PCA algorithm.
+
+first we need to do some data preprocessing:
+
+1. Normalize to have zero mean: subtract the mean from all the features
+2. Feature scaling: normalize the ranges of features so the rages are not so far apart
+
+Now we have to find the direction of the line that has the maximum variance. This is the direction that the data is most spread out along it. This is called the first principal component.
+
+By maximum variance, we mean that when the line is drawn, when we project the data points on it, the sum of the squared distances of the projected points to the origin is maximum.
+
+### Coordinate on the new axis
+
+To find the coordinate of the data points on the new axis, we need to find the dot product of the data points and the length one vector (unit vector) of the line.
+
+For example given $[x_1, x_2] = [2, 3]$ and unit vector of $[0.71, 0.71]$, the coordinate of $x_1$ and $x_2$ on the new axis would be $[2, 3] \cdot [0.71, 0.71] = 3.55$
+
+### More principal components
+
+Until now we only found the first principal component, but we can find the second principal component by finding the line that is perpendicular to the first principal component and has the maximum variance.
+
+Perpendicular means that the dot product of the two lines is zero or in other words, two lines make a 90 degree angle.
+
+### Difference between PCA and linear regression
+
+In linear regression, we try to minimize the squared distance between the data points and the line. But in PCA, we try to maximize the squared distance between the data points and the line.
+
+Furthermore, the linear regression is a supervised algorithm, but PCA is an unsupervised algorithm, meaning that unlike linear regression, we don't have a $y$ involved and theres just $x_1$ to $x_n$.
+
+<img src="assets/img-10.jpg" height="300px">
+
+### Approximation to the original data
+
+Given a $z$, to find the approximation of original $x_1$ and $x_2$ we can multiply the $z$ by the length one vector (unit vector) of the line.
+
+For example given $z = 3.55$ and unit vector of $[0.71, 0.71]$, the approximation of $x_1$ and $x_2$ would be $3.55 \times [0.71, 0.71] = [2.52, 2.52]$
+
+This is called the reconstruction step of the PCA.
+
+## PCA in Code
+
+0. First, optionally we need to perform feature scaling
+1. `fit` the data to obtain 2 (or 3) new axes (principal components)
+2. Optionally examine how much variance is explained by each principal component by `explained_variance_ratio` function
+3. Transform (project) the data onto the new axis by `transform` function
+
+Example:
+
+```python
+X = np.array([[1, 1], [2, 1], [3, 2],
+              [-1, -1], [-2, -1], [-3, -2]])
+
+pca_1 = PCA(n_components=1) # initialize with 1 principal component
+pca_1.fit(X)
+pca_1.explained_variance_ratio_
+
+X_trans_1 = pca_1.transform(X)
+X_reduced_1 = pca.inverse_transform(X_trans_1)
+```
+
+Output:
+```
+array([
+[ 1.38340578],
+[ 2.22189802],
+[ 3.6053038 ],
+[-1.38340578],
+[-2.22189802],
+[-3.6053038 ]])
+```
+
+### Application of PCA
+
+While todays PCA is mostly used for visualization, it's been used for other things too:
+
+- Data compression
+  - We can reduce the number of features to save space
+- Speeding up training of a supervised learning model
+  - It's been useful for older machine learning algorithms like SVM, but with todays deep learning algorithmsq, it doesn't make much difference
