@@ -36,7 +36,7 @@ Here we define _Discount Factor_ ($\gamma$) which is a little bit less than $1$ 
 For example with $\gamma = 0.9$, the total reward is:
 
 $$
-R = \sum^{\infty}_{k=0} \gamma^k r_{k+1}
+R = \sum_{k=0}^{\infty} \gamma^k r_{k+1}
 $$
 
 In financial application, the discount factor has a natural interpretation as the interest rate or the time value of money.
@@ -47,7 +47,7 @@ To summarize, the return is sum of the rewards that the system gets, weighted by
 
 A policy is a function $\pi(s) = a$ mapping from states to actions, that tells you what action a to take in a given state $s$.
 
-Our goal reinforcement learning is to find a policy $\pi$ that tells you what action ($a = \pi(s)$) to take in every state ($s$) so as to maximize the return.
+Our goal reinforcement learning is to find a policy $\pi$ that tells you what action $a = \pi(s)$ to take in every state ($s$) so as to maximize the return.
 
 ## Review of key concepts
 
@@ -84,15 +84,17 @@ On the other hand decreasing the discount factor $\gamma$ will make the algorith
 - $a'$: action that you take in state $s'$
 
 $$
-Q(s, a) = \underbrace{R(s)}_{\text{immediate reward}} + \gamma \underbrace{\underset{a'}{\max} Q(s', a')}_{\text{discounted future reward}}
+Q(s, a) = R(s) + \gamma \underbrace{\underset{a'}{\max} Q(s', a')}_{\text{discounted future reward}}
 $$
+
+_note)_ $R(s)$ is called _immediate result_
 
 ## Random (stochastic) environment
 
 When there's a random environment, the possiblity of mars rover going to the right direction decreases from $1$, so the Q-function value of going to the right decreases. So the job of reinforcement learning is to find the best policy $\pi$ that maximizes the average of discounted reward.
 
 $$
-\text{Expected Return} = \text{Average}(R_1 + \gamma R_2 + \gamma^2 R_3 + \dots) = \mathbf{E}[R_1 + \gamma R_2 + \gamma^2 R_3 + \dots]
+\text{Expected Return} = \text{Average}(R_1 + \gamma R_2 + \gamma^2 R_3 + \dots) = \mathbf{E}\left[R_1 + \gamma R_2 + \gamma^2 R_3 + \dots \right]
 $$
 
 - In statistics the _Expected_ is another term for average
