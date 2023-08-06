@@ -36,7 +36,7 @@ Here we define _Discount Factor_ ($\gamma$) which is a little bit less than $1$ 
 For example with $\gamma = 0.9$, the total reward is:
 
 $$
-R = \sum_{k=0}^{\infty} \gamma^k r_{k+1}
+R = \sum^{\infty}_{k=0} \gamma^k r_{k+1}
 $$
 
 In financial application, the discount factor has a natural interpretation as the interest rate or the time value of money.
@@ -52,3 +52,55 @@ Our goal reinforcement learning is to find a policy $\pi$ that tells you what ac
 ## Review of key concepts
 
 Markov Decision Process (MDP): This term refers to that the future only depends on the current state, not the past states. In other words, future only depends on what you are now, not how you got here.
+
+## State-action value function definition
+
+The state-action value function $Q(s, a)$ is the expected return starting from state $s$, taking action $a$, and then following policy $\pi$.
+
+$Q(s, a)$ = Return if you
+
+- start in state $s$
+- take action $a$ (once)
+- then behave optimally after that.
+
+_note)_ State-action function is also called Q-function, Q*, and Optimal Q-function.
+
+_note)_ The best possible return from state $s$ is $\underset{a}{\max} Q(s, a)$
+
+_note)_ The best possible action in state $s$ is the action $a$ that gives $\underset{a}{\max} Q(s, a)$
+
+## State-action value function example
+
+Increasing the terminal reward will increase the Q-function value of moving toward that terminal state and makes it worth to walk toward it even if it takes a lot of steps.
+
+On the other hand decreasing the discount factor $\gamma$ will make the algorithm more impatient and it will try to walk toward the closest reward.
+
+## Bellman equation
+
+- $s$: current state
+- $a$: current action
+- $R(s)$: reward of current state
+- $s'$: state you get after taking action $a$
+- $a'$: action that you take in state $s'$
+
+$$
+Q(s, a) = \underbrace{R(s)}_{\text{immediate reward}} + \gamma \underbrace{\underset{a'}{\max} Q(s', a')}_{\text{discounted future reward}}
+$$
+
+## Random (stochastic) environment
+
+When there's a random environment, the possiblity of mars rover going to the right direction decreases from $1$, so the Q-function value of going to the right decreases. So the job of reinforcement learning is to find the best policy $\pi$ that maximizes the average of discounted reward.
+
+$$
+\text{Expected Return} = \text{Average}(R_1 + \gamma R_2 + \gamma^2 R_3 + \dots) = \mathbf{E}[R_1 + \gamma R_2 + \gamma^2 R_3 + \dots]
+$$
+
+- In statistics the _Expected_ is another term for average
+- $\mathbf{E}$ refers to the expected value
+
+Bellman equation for random environment:
+
+$$
+Q(s, a) = R(s) + \gamma\ \mathbf{E}[\underset{a'}{\max} Q(s', a')]
+$$
+
